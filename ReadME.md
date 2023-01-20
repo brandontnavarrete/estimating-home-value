@@ -45,11 +45,16 @@ Usinng statistical test, we will analyze the key drivers of property values for 
  
   
 ▪️ Explore data in search of drivers of churn
-   ▪️ Answer the following initial questions
-        ▪️ what is correlated with `tax_value` wether that be negative or positive?
-        ▪️ Does having an above average bedroom count affect the `tax_value`?
-        ▪️ Does having an above average bathroom count affect the `tax_value`?
-        ▪️ Does `sq_feet`  affect the `tax_value`?
+▪️ Answer the following initial questions
+   
+▪️ what is correlated with `tax_value` wether that be negative or positive?
+     
+▪️ Does having an above average bedroom count affect the `tax_value`?
+       
+▪️ Does having an above average bathroom count affect the `tax_value`?
+ 
+▪️ Does `sq_feet`  affect the `tax_value`?
+ 
        
 
 # Data Dictionary
