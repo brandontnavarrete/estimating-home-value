@@ -44,9 +44,8 @@ Usinng statistical test, we will analyze the key drivers of property values for 
   ▪️ drop outliers    
  
   
-▪️ Explore data in search of drivers of churn
-▪️ Answer the following initial questions
-   
+## :memo: Explore data in search of drivers of churn /  Answer the following initial questions
+  
 ▪️ what is correlated with `tax_value` wether that be negative or positive?
      
 ▪️ Does having an above average bedroom count affect the `tax_value`?
