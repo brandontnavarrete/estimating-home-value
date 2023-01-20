@@ -29,17 +29,17 @@ Usinng statistical test, we will analyze the key drivers of property values for 
 ▪️ Acquire data from Sequel Ace database
   ▪️ Pull Columns :
       `bedroomcnt`
-     `bathroomcnt`
-     `calculatedfinishedsquarefeet` 
+      `bathroomcnt`
+      `calculatedfinishedsquarefeet` 
       `taxvaluedollarcnt`
       `yearbuilt`
-     `taxamount`
+      `taxamount`
       `fips`
 
 ▪️ Prepare Data
   ▪️ drop nulls  
   ▪️change data types to ints
-  ▪️ rename columns  
+  ▪️ rename columns    
   ▪️create dummies  
   ▪️ drop outliers    
  
