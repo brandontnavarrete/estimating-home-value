@@ -72,3 +72,40 @@ Usinng statistical test, we will analyze the key drivers of property values for 
 *Tax Amount*| Float number | The total property tax paid for a given year
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Steps to Reproduce
+- [x] Clone this repo .
+- [x] Using your own **env.py** file, acquire the data from SQL Ace database.
+- [x] Use the .py files to replicate data
+- [x] Libraries used are pandas, matplotlib, seaborn, sklearn, scipy
+- [x] run note book
+
