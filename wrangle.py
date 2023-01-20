@@ -80,10 +80,12 @@ def clean_zillow(df):
     df = handle_outliers(df)
     
     df = rename_cols(df)
+    
+    df_d = pd.get_dummies(df,columns= ['bedrooms','bathrooms'],drop_first = True)
 
     df.to_csv("zillow.csv", index=False)
 
-    return df
+    return df, df_d
 
 #-------------------------------------------------
 
@@ -121,7 +123,7 @@ def wrangle_zillow():
         
         df.to_csv('zillow_2017.csv')
 
-    return df
+    return df , df_d
 
 #-------------------------------------------------
 
