@@ -97,10 +97,14 @@ def baseline(y_train,y_validate):
       "\nValidate/Out-of-Sample: ", round(rmse_validate_median, 2),
       "\nDifference: ", abs(rmse_train_median - rmse_validate_median))
 
-    return y_train,y_validate
+    evals = {'metric': ['RMSE'], 'model': ['baseline'],'rmse':[rmse_train_median],'overfit':[rmse_train_median - rmse_validate_median]}
+
+    evals = pd.DataFrame(data=evals)
+    
+    return y_train,y_validate,evals
 
 #-----------------------------------------------------
-def lm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate):
+def lm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
     # create object
     lm = LinearRegression(normalize= True)
 
@@ -124,11 +128,15 @@ def lm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate):
       "\nValidation/Out-of-Sample: ", rmse_validate_lm,
       "\nDifference: ", abs(rmse_train_lm - rmse_validate_lm))
 
-    return y_train,y_validate
+    evals1 = {'metric': 'RMSE', 'model': 'linear regression','rmse':rmse_train_lm,'overfit':rmse_train_lm - rmse_validate_lm}
+
+    evals = evals.append(evals1,ignore_index=True)
+        
+    return y_train,y_validate,evals
 
 
 #-----------------------------------------------------
-def lars_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate):
+def lars_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
     # object instance
     lars = LassoLars(alpha = .3)
 
@@ -152,12 +160,17 @@ def lars_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate):
       "\nValidation/Out-of-Sample: ", rmse_validate_lrs,
        "\nDifference: ", abs(rmse_train_lrs - rmse_validate_lrs))
     
-    return y_train,y_validate
+    evals1 = {'metric': 'RMSE', 'model': 'Lars','rmse':rmse_train_lrs,'overfit':rmse_train_lrs - rmse_validate_lrs}
+
+    evals = evals.append(evals1,ignore_index=True)
+        
+    
+    return y_train,y_validate,evals
 
 
 #-----------------------------------------------------
 
-def glm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate):
+def glm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
     
     # create the model object
     glm = TweedieRegressor(power=0, alpha=0)
@@ -182,6 +195,57 @@ def glm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate):
       "\nValidation/Out-of-Sample: ", rmse_validate_tr,
        "\nDifference: ", abs(rmse_train_tr - rmse_validate_tr))
     
-    return y_train,y_validate
+    evals1 = {'metric': 'RMSE', 'model': 'glm','rmse':rmse_train_tr,'overfit':rmse_train_tr - rmse_validate_tr}
 
+    evals = evals.append(evals1,ignore_index=True)
+        
+    
+    return y_train,y_validate,evals
+
+
+#-----------------------------------------------------
+
+def pr_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
+   
+    # create object 
+    pf = PolynomialFeatures(degree=1)
+
+    # fit and transform X_train_scaled
+    x_train_degree2 = pf.fit_transform(x_train_scaled)
+
+    # transform x_validate_scaled 
+    x_validate_degree2 = pf.transform(x_validate_scaled)
+
+    
+    # create the model object
+    lm2 = LinearRegression(normalize=True)
+
+    # fit the model to our training data. We must specify the column in y_train, 
+    # since we have converted it to a dataframe from a series! 
+    lm2.fit(x_train_degree2, y_train['tax_value'])
+
+    # predict train
+    y_train['t_value_lm2'] = lm2.predict(x_train_degree2)
+
+    # evaluate: rmse
+    rmse_train_lm2 = mean_squared_error(y_train['tax_value'], y_train['t_value_lm2'])**(1/2)
+
+    # predict validate
+    y_validate['t_value_lm2'] = lm2.predict(x_validate_degree2)
+
+    # evaluate: rmse
+    rmse_validate_lm2 = mean_squared_error(y_validate['tax_value'], y_validate['t_value_lm2'])**(1/2)
+
+    print("RMSE for Polynomial Model, degrees=1\nTraining/In-Sample: ", rmse_train_lm2, 
+      "\nValidation/Out-of-Sample: ", rmse_validate_lm2,
+       "\nDifference: ", abs(rmse_train_lm2 - rmse_validate_lm2))
+    
+    evals1 = {'metric': 'RMSE', 'model': 'polynomial','rmse':rmse_train_lm2,'overfit':rmse_train_lm2 - rmse_validate_lm2}
+
+    evals = evals.append(evals1,ignore_index=True)
+        
+    
+    
+    
+    return y_train,y_validate,evals
     
