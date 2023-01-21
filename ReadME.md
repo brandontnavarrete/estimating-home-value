@@ -67,8 +67,7 @@ Usinng statistical test, we will analyze the key drivers of property values for 
 *Bedrooms* | Integer ranging from 1-6 | Number of bedrooms in home 
 *Bathrooms* | Float ranging from 0.5-6.5| Number of bathrooms in home including fractional bathrooms
 *Square Feet* | Float number | Calculated total finished living area of the home 
-*Age* | Integer |  This indicate the age of the property in 2017, calculated using the year the principal residence was built 
-*Tax Value* | Float number | The total tax assessed value of the parcel
+*Tax Value* | Float number | The total tax assessed value of the house
 *Tax Amount*| Float number | The total property tax paid for a given year
 
 
