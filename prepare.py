@@ -10,6 +10,10 @@ def change_zillow(df):
     
     df = df.dropna()
     
+    # mapping fips code to the county
+    df['fips'] = df.fips.map({ 06037.0: 'Los Angeles', 06059.0: 'Orange', 06111.0: 'Ventura'})
+
+    
     df["fips"] = df["fips"].astype(int)
     
     df["yearbuilt"] = df["yearbuilt"].astype(int)
@@ -46,6 +50,7 @@ def clean_zillow(df):
     df = handle_outliers(df)
     
     df = rename_cols(df)
+    
 
     df.to_csv("zillow.csv", index=False)
 

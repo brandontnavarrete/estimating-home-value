@@ -248,4 +248,63 @@ def pr_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
     
     
     return y_train,y_validate,evals
+
+#-----------------------------------------------------
+
+def model_compare(evals):
+    
+    idx = np.where ((evals['model'] == 'baseline') | (evals['model'] == 'Lars') )
+    
+    # Visualizing model performance
+    plt.figure(figsize = (15,7))
+    # Load model performance from csv
+    plt.title('Lars Model RMSE Performs Better than Baseline', fontsize = 18)
+    sns_plot = sns.barplot(x='model', y='rmse', data = evals.loc[idx], palette = ['red','teal'])
+
+    
+#-----------------------------------------------------
+
+    
+def test_lars_rmse(x_train_scaled,y_train,y_test,x_test_scaled):
+    
+    y_test = pd.DataFrame(y_test)
+    y_test['baseline'] = y_test.tax_value.mean()
+    
+    # object instance
+    lars = LassoLars(alpha = .3)
+
+    # fit the model to our training data. We must specify the column in y_train, 
+    # since we have converted it to a dataframe from a series! 
+    lars.fit(x_train_scaled, y_train['tax_value'])
+
+    # predict train
+    y_test['lars_test_predict'] = lars.predict(x_test_scaled)
+
+    # evaluate: rmse
+    lars_test_rmse = mean_squared_error(y_test.tax_value,y_test['lars_test_predict'], squared = False)
+    
+    y_test['lars_test_rmse'] = lars_test_rmse
+    
+    return y_test
+
+#-----------------------------------------------------
+
+def test_visual(y_test):
+
+    # running the best model on test
+    plt.figure(figsize=(16,8))
+    plt.title('Lars Performance', fontsize = 18)
+
+
+    # Plotting the model predictions
+    plt.plot(y_test.lars_test_predict, y_test.lars_test_predict, alpha=0.7, linewidth=3, color='green',label = 'model prediction')
+
+    # Plotting baseline predictions
+    plt.plot(y_test, y_test.baseline ,alpha=0.4, linewidth= 3,color='red', label = 'baseline prediction')
+
+
+    # Plotting the tax values compared to the models predictions
+    plt.scatter(y_test['tax_value'],y_test['lars_test_predict'], alpha = 0.9, color = 'gray', s=100)
+
+    plt.show()
     
