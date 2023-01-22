@@ -24,18 +24,29 @@ import env
 # for chart image
 from IPython.display import Image
 
+# setting alpha
+a = 0.05
+    
 
+    
+#-----------------------------------------------------
 def bathroom_ttest(train):
     
-    a = 0.05
+    '''a function which takes in a train data set and calculates and returns a specific t-test for the mean of bathroom data'''
     
+    # setting alpha
+    a = 0.05
+    # creating a mean of bathrooms
     avg_bath = train['bathrooms'].mean()
     
+    # using the mean to create mask data frames on either side
     above_bath = train[train.bathrooms >avg_bath].bathrooms
     below_bath = train[train.bathrooms <= avg_bath].bathrooms
     
+    # performing a t test
     t, p = stats.ttest_ind(above_bath, below_bath, equal_var=False)
 
+    # if statement to return our results
     if p / 2 > a:
         print("We fail to reject $H_{0}$")
     elif t < 0:
@@ -49,14 +60,16 @@ def bathroom_ttest(train):
 
 def bedroom_ttest(train):
     
-    a = 0.05
-    
+    # creating an average metric of bedroom count
     avg_bed = train['bedrooms'].mean()
     
+    # creating a mask for a new data frame
     abov_bed_sample = train[train.bedrooms > avg_bed].bedrooms
     
+    # perform a t test
     t, p = stats.ttest_1samp(abov_bed_sample , avg_bed)
     
+    # if statement to return our results
     if p > a:
         print('We fail to reject $H_{0}$ : There is not a significant difference in the mean')
     else:
@@ -68,11 +81,13 @@ def bedroom_ttest(train):
 
 def baseline(y_train,y_validate):
     
+    '''a function to return our baseline and create a dataframe to hold all the models and their features'''
+    
+    # turning our series into a data frame
     y_train = pd.DataFrame(y_train)
     y_validate = pd.DataFrame(y_validate)
     
     # predict tax value mean
-
     y_train['t_value_mean'] = y_train['tax_value'].mean()
     y_validate['t_value_mean'] = y_validate['tax_value'].mean()
 
@@ -84,6 +99,7 @@ def baseline(y_train,y_validate):
     rmse_train_mean = mean_squared_error(y_train.tax_value, y_train.t_value_mean)**(1/2)
     rmse_validate_mean = mean_squared_error(y_validate.tax_value, y_validate.t_value_mean)**(1/2)
 
+    # print our results for an easier interpretion
     print("RMSE using Mean\nTrain/In-Sample: ", round(rmse_train_mean, 2), 
       "\nValidate/Out-of-Sample: ", round(rmse_validate_mean, 2),
       "\nDifference: ", abs(rmse_train_mean - rmse_validate_mean))
@@ -96,15 +112,20 @@ def baseline(y_train,y_validate):
     print("RMSE using Median\nTrain/In-Sample: ", round(rmse_train_median, 2), 
       "\nValidate/Out-of-Sample: ", round(rmse_validate_median, 2),
       "\nDifference: ", abs(rmse_train_median - rmse_validate_median))
-
+    
+    # creating a new series to hold our results of all model performance
     evals = {'metric': ['RMSE'], 'model': ['baseline'],'rmse':[rmse_train_median],'overfit':[rmse_train_median - rmse_validate_median]}
 
+    # creating a data frame from our series to pass on
     evals = pd.DataFrame(data=evals)
     
     return y_train,y_validate,evals
 
 #-----------------------------------------------------
 def lm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
+   
+    '''a function to create our linear regression model to run on train and validate'''
+    
     # create object
     lm = LinearRegression(normalize= True)
 
@@ -137,6 +158,10 @@ def lm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
 
 #-----------------------------------------------------
 def lars_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
+    
+    '''a function to create our lars model to run on train and validate'''
+
+    
     # object instance
     lars = LassoLars(alpha = .3)
 
@@ -171,6 +196,9 @@ def lars_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
 #-----------------------------------------------------
 
 def glm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
+    
+    '''a function to create our glm model to run on train and validate'''
+
     
     # create the model object
     glm = TweedieRegressor(power=0, alpha=0)
@@ -207,6 +235,9 @@ def glm_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
 
 def pr_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
    
+    '''a function to create our ploynomial regression dataframe and linear regression model to run on train and validate'''
+
+
     # create object 
     pf = PolynomialFeatures(degree=1)
 
@@ -253,6 +284,8 @@ def pr_rmse(x_train_scaled,y_train,x_validate_scaled,y_validate,evals):
 
 def model_compare(evals):
     
+    ''' function to return a bar graph to compare baseline and model RMSE'''
+    
     idx = np.where ((evals['model'] == 'baseline') | (evals['model'] == 'Lars') )
     
     # Visualizing model performance
@@ -266,6 +299,8 @@ def model_compare(evals):
 
     
 def test_lars_rmse(x_train_scaled,y_train,y_test,x_test_scaled):
+    
+    ''' a function to test our test data set on our best model and return the results'''
     
     y_test = pd.DataFrame(y_test)
     y_test['baseline'] = y_test.tax_value.mean()
@@ -290,6 +325,8 @@ def test_lars_rmse(x_train_scaled,y_train,y_test,x_test_scaled):
 #-----------------------------------------------------
 
 def test_visual(y_test):
+    
+    ''' a function to create a scatter plot with baseline and model comparison to the actual value tax ''' 
 
     # running the best model on test
     plt.figure(figsize=(16,8))

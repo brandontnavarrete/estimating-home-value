@@ -42,9 +42,13 @@ def get_zillow_data():
 
 def change_zillow(df):
     
+    ''' a function to change data types of my columns and map names to fips'''
+    
+    # drop nulls
     df = df.dropna()
     
-    df["fips"] = df["fips"].astype(int)
+    # mapping fips code to the county
+    df['fips'] = df.fips.map({ 06037.0: 'Los Angeles', 06059.0: 'Orange', 06111.0: 'Ventura'})
     
     df["yearbuilt"] = df["yearbuilt"].astype(int)
     
@@ -54,11 +58,17 @@ def change_zillow(df):
     
     df["calculatedfinishedsquarefeet"] = df["calculatedfinishedsquarefeet"].astype(int)
     
+    
+    
     return df
 
 #-------------------------------------------------
 
 def rename_cols(df):
+   
+    ''' a function to rename columns and make them easier to read '''
+    
+    # renaming method performed 
     df = df.rename(columns={'bedroomcnt':'bedrooms', 
                             'bathroomcnt':'bathrooms', 
                             'calculatedfinishedsquarefeet':'sq_feet', 
@@ -74,7 +84,7 @@ def clean_zillow(df):
     '''
     takes data frame and changes datatypes and renames columnns, returns dataframe
     '''
-    
+    # calls other functions
     df = change_zillow(df)
     
     df = handle_outliers(df)
@@ -82,7 +92,8 @@ def clean_zillow(df):
     df = rename_cols(df)
     
     df_d = pd.get_dummies(df,columns= ['bedrooms','bathrooms'],drop_first = True)
-
+    
+    # save df to csv
     df.to_csv("zillow.csv", index=False)
 
     return df, df_d
@@ -90,7 +101,10 @@ def clean_zillow(df):
 #-------------------------------------------------
 
 def handle_outliers(df):
+    
     '''handle outliers that do not represent properties likely for 99% of buyers and zillow visitors'''
+    
+    # this series of steps is how outliers were determined and removed
     
     df = df[df.bathroomcnt <= 6]
     
@@ -111,18 +125,22 @@ def wrangle_zillow():
    Acquires zillow data and uses the clean function to call other functions and returns a clean data        frame with new names, dropped nulls, new data types.
     """
 
+    # create a variable name
     filename = "zillow2017.csv"
 
+    # searching for that variable name
     if os.path.isfile(filename):
         df = pd.read_csv(filename)
     else:
         
+        # perform other functions to make a new data acquistion
         df = get_zillow_data()
 
         df = clean_zillow(df)
         
-        df.to_csv('zillow_2017.csv')
+        df.to_csv('zillow2017.csv')
 
+    df_d = df.copy()
     return df , df_d
 
 #-------------------------------------------------
@@ -169,6 +187,8 @@ def x_and_y(train,validate,test,target):
 
 def scaled_data(x_train,x_validate,x_test,num_cols,return_scaler = False):
 
+    ''' a function to scale my data appropriately ''' 
+    
     # intializing scaler
     scaler = MinMaxScaler()
     
