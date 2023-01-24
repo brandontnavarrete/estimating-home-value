@@ -23,19 +23,31 @@ def get_zillow_data():
     """returns a dataframe from SQL of all 2017 properties that are single family residential"""
 
     sql = """
-    select 
+    select   
+  unitcnt,
+  lotsizesquarefeet,
+  heatingorsystemtypeid,
+  garagetotalsqft,
+  fullbathcnt,
+ fireplacecnt,
+ basementsqft,
+     parcelid,
+    assessmentyear,
+    poolcnt,
     bedroomcnt, 
     bathroomcnt, 
     calculatedfinishedsquarefeet, 
     taxvaluedollarcnt, 
     yearbuilt,
     taxamount, 
-    fips
+    fips,
+    latitude,
+    longitude
     from properties_2017
     join propertylandusetype using (propertylandusetypeid)
-    join predictions_2017 using (parcelid)
     where propertylandusedesc = "Single Family Residential"
     """
+    
     return pd.read_sql(sql, get_connection("zillow"))
 
 #-------------------------------------------------
@@ -44,11 +56,40 @@ def change_zillow(df):
     
     ''' a function to change data types of my columns and map names to fips'''
     
+    # replacing nulls with zero
+    df['poolcnt'] = df['poolcnt'].replace(np.nan, 0)
+    
+    df['unitcnt'] = df['unitcnt'].replace(np.nan, 0)
+    
+    df['heatingorsystemtypeid'] = df['heatingorsystemtypeid'].replace(np.nan, 0)
+    
+    df['garagetotalsqft'] = df['garagetotalsqft'].replace(np.nan, 0)
+    
+    df['fullbathcnt'] = df['fullbathcnt'].replace(np.nan, 0)
+   
+    df['fireplacecnt'] = df['fireplacecnt'].replace(np.nan, 0)
+    
+    df['basementsqft'] = df['basementsqft'].replace(np.nan, 0)
+    
     # drop nulls
     df = df.dropna()
     
     # mapping fips code to the county
     df['fips'] = df.fips.map({ 06037.0: 'Los Angeles', 06059.0: 'Orange', 06111.0: 'Ventura'})
+    
+    
+     # change data types
+    df['unitcnt'] = df['unitcnt'].astype(int)
+    
+    df['heatingorsystemtypeid'] = df['heatingorsystemtypeid'].astype(int)
+    
+    df['garagetotalsqft'] = df['garagetotalsqft'].astype(int)
+    
+    df['fullbathcnt'] = df['fullbathcnt'].astype(int)
+    
+    df['fireplacecnt'] = df['fireplacecnt'].astype(int)
+    
+    df['basementsqft'] = df['basementsqft'].astype(int)
     
     df["yearbuilt"] = df["yearbuilt"].astype(int)
     
@@ -58,7 +99,14 @@ def change_zillow(df):
     
     df["calculatedfinishedsquarefeet"] = df["calculatedfinishedsquarefeet"].astype(int)
     
+    df["poolcnt"] = df["poolcnt"].astype(int)
     
+    df["assessmentyear"] = df["assessmentyear"].astype(int)
+    
+    df["longitude"] = df["longitude"].astype(int)
+    
+    df["latitude"] = df["latitude"].astype(int)
+     
     
     return df
 
@@ -91,8 +139,8 @@ def clean_zillow(df):
     
     df = rename_cols(df)
     
-    df_d = pd.get_dummies(df,columns= ['bedrooms','bathrooms'],drop_first = True)
-    
+    df_d = pd.get_dummies(df,columns= ['bedrooms','bathrooms','assessmentyear','poolcnt','unitcnt','heatingorsystemtypeid','fullbathcnt','fireplacecnt'],drop_first = True)
+        
     # save df to csv
     df.to_csv("zillow.csv", index=False)
 
